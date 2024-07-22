@@ -20,11 +20,11 @@ import {
 import moment, { Moment } from "moment-timezone";
 import React, {
   useCallback,
-  useEffect,
   useMemo,
   useRef,
-  useState,
+  useState
 } from "react";
+import { useEffectEvent } from "../hooks/useEffectEvent";
 import { TypographyBoldDefault } from "./Common";
 import {
   DatepickerTab,
@@ -122,7 +122,6 @@ export const CustomDatepicker: React.FC<IOwnProps> = (props) => {
   });
 
   const tab = eTab || iTab;
-  const tabRef = useRef(tab);
   const value = useMemo(() => ({ ...iValue, ...eValue }), [eValue, iValue]);
 
   const onChange = useCallback(
@@ -133,42 +132,39 @@ export const CustomDatepicker: React.FC<IOwnProps> = (props) => {
     [eOnChange, eValue, value]
   );
 
-  useEffect(() => {
-    if (tab !== tabRef.current) {
-      setRangeTabState({ selectInProgress: false });
-      tabRef.current = tab;
+  useEffectEvent(tab, () => {
+    setRangeTabState({ selectInProgress: false });
 
-      if (tab === DatepickerTab.RANGE) {
-        return;
-      }
-
-      if (tab === DatepickerTab.DAY) {
-        onChange({ end: value.start.clone() });
-        return;
-      }
-
-      if (tab === DatepickerTab.WEEK) {
-        onChange({ end: value.start.clone().add({ weeks: 1, days: -1 }) });
-        return;
-      }
-
-      if (tab === DatepickerTab.MONTH) {
-        onChange({
-          start: value.start.clone().set({ date: 1 }),
-          end: value.start.clone().add({ months: 1 }).set({ date: 0 }),
-        });
-        return;
-      }
-
-      if (tab === DatepickerTab.YEAR) {
-        onChange({
-          start: value.start.clone().set({ date: 1, month: 0 }),
-          end: value.start.clone().add({ years: 1 }).set({ date: 0, month: 0 }),
-        });
-        return;
-      }
+    if (tab === DatepickerTab.RANGE) {
+      return;
     }
-  }, [onChange, tab, value.start]);
+
+    if (tab === DatepickerTab.DAY) {
+      onChange({ end: value.start.clone() });
+      return;
+    }
+
+    if (tab === DatepickerTab.WEEK) {
+      onChange({ end: value.start.clone().add({ weeks: 1, days: -1 }) });
+      return;
+    }
+
+    if (tab === DatepickerTab.MONTH) {
+      onChange({
+        start: value.start.clone().set({ date: 1 }),
+        end: value.start.clone().add({ months: 1 }).set({ date: 0 }),
+      });
+      return;
+    }
+
+    if (tab === DatepickerTab.YEAR) {
+      onChange({
+        start: value.start.clone().set({ date: 1, month: 0 }),
+        end: value.start.clone().add({ years: 1 }).set({ date: 0, month: 0 }),
+      });
+      return;
+    }
+  })
 
   const onTabChange = useCallback(
     (argTab: DatepickerTab) => {
@@ -262,11 +258,10 @@ export const CustomDatepicker: React.FC<IOwnProps> = (props) => {
     switch (tab) {
       case DatepickerTab.RANGE:
       case DatepickerTab.WEEK:
-        return `${value.start.format(dateFormat)} - ${
-          rangeTabState.selectInProgress
-            ? "Select end date"
-            : value.end.format(dateFormat)
-        }`;
+        return `${value.start.format(dateFormat)} - ${rangeTabState.selectInProgress
+          ? "Select end date"
+          : value.end.format(dateFormat)
+          }`;
       case DatepickerTab.DAY:
         return value.start.format(dateFormat);
       case DatepickerTab.MONTH:
@@ -438,12 +433,12 @@ export const CustomDatepicker: React.FC<IOwnProps> = (props) => {
                     width: 0,
                   },
                   [`& .${iconButtonClasses.edgeEnd}, & .${iconButtonClasses.edgeStart}`]:
-                    {
-                      position: "absolute",
-                      top: 0,
-                      bottom: 0,
-                      borderRadius: "4px",
-                    },
+                  {
+                    position: "absolute",
+                    top: 0,
+                    bottom: 0,
+                    borderRadius: "4px",
+                  },
                   [`& .${iconButtonClasses.edgeEnd}`]: {
                     left: 8,
                   },

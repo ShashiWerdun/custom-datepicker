@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import moment from "moment";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CustomDatepicker } from "./components/CustomDatepicker";
 import {
   CustomDatepickerTabs,
@@ -13,14 +13,6 @@ function App() {
   const [tab, setTab] = useState(DefaultDatepickerTab);
   const [startDate, setStartDate] = useState(now);
   const [endDate, setEndDate] = useState(now);
-
-  useEffect(() => {
-    console.log("debug: App startDate", startDate.toLocaleString());
-  }, [startDate]);
-
-  useEffect(() => {
-    console.log("debug: App endDate", endDate.toLocaleString());
-  }, [endDate]);
 
   return (
     <Box>
@@ -43,8 +35,8 @@ function App() {
             day.dayOfYear() % 3 === 0
               ? "red"
               : day.dayOfYear() % 3 === 1
-              ? "blue"
-              : "green";
+                ? "blue"
+                : "green";
           return (
             <Box
               sx={{
