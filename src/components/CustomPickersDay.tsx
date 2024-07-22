@@ -1,7 +1,23 @@
 import { Tooltip, styled } from "@mui/material";
-import { PickersDay, pickersDayClasses } from "@mui/x-date-pickers";
+import {
+  PickersDay,
+  PickersDayProps,
+  pickersDayClasses,
+} from "@mui/x-date-pickers";
 import classNames from "classnames";
-import { useState } from "react";
+import moment, { Moment } from "moment";
+import React, { useState } from "react";
+
+export interface ICustomPickersDayProps {
+  timezone?: string;
+  isStartDate: boolean;
+  isEndDate: boolean;
+  isInSelectedRange: boolean;
+  isHoverEndDate?: boolean;
+  isInHoverRange?: boolean;
+  getTooltipTitle?: (day: Moment) => React.JSX.Element;
+  getMarker?: (day: Moment) => React.JSX.Element;
+}
 
 const CustomPickersDayRoot = styled("div")(() => ({
   height: 26,
@@ -12,8 +28,11 @@ const CustomPickersDayRoot = styled("div")(() => ({
   margin: "8px 0px",
 }));
 
-export default function CustomPickersDay(props) {
+export const CustomPickersDay: React.FC<
+  ICustomPickersDayProps & PickersDayProps<Moment>
+> = (props) => {
   const {
+    timezone,
     isStartDate,
     isEndDate,
     isInSelectedRange,
@@ -34,6 +53,11 @@ export default function CustomPickersDay(props) {
 
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
+  const today = moment.tz(timezone || "utc").startOf("day");
+  const isCurrentBroadcastDay = (date: Moment) => {
+    return date.isSame(today, "days");
+  };
+
   return (
     <Tooltip
       open={tooltipOpen}
@@ -42,14 +66,11 @@ export default function CustomPickersDay(props) {
       arrow
       disableFocusListener
       disableTouchListener
-      sx={{
-        background: "transparent",
-        padding: 0,
-      }}
     >
       <CustomPickersDayRoot>
         <PickersDay
           {...pickersDayProps}
+          today={isCurrentBroadcastDay(day)}
           autoFocus={false}
           selected={false}
           className={classNames(
@@ -103,4 +124,4 @@ export default function CustomPickersDay(props) {
       </CustomPickersDayRoot>
     </Tooltip>
   );
-}
+};
